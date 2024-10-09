@@ -58,7 +58,7 @@ public class Multicast extends javax.swing.JFrame {
 
         jLabel2.setText("Group IP:");
 
-        tf_group_ip.setText("239.123.35.46");
+        tf_group_ip.setText("224.0.0.1");
 
         btn_join.setText("Join Group");
         btn_join.addActionListener(new java.awt.event.ActionListener() {
@@ -161,7 +161,7 @@ public class Multicast extends javax.swing.JFrame {
             
             text_ex.setText("Name: " + userName + " | Group: " + groupIP);
             toggleButtons(true);
-            sendSystemMessage(userName + " joined the group");
+            sendSystemMessage(userName + " (" + localAddress.getHostAddress() + ") joined the group");
             
             new Thread(() -> {
                 try {
@@ -202,7 +202,7 @@ public class Multicast extends javax.swing.JFrame {
     private void btn_leaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_leaveActionPerformed
         if (multicastSocket != null && groupAddress != null) {
             try {
-                sendSystemMessage(userName + " left the group.");
+                sendSystemMessage(userName + " (" + localAddress.getHostAddress() + ") left the group.");
                 multicastSocket.leaveGroup(groupAddress);
                 multicastSocket.close();
                 txt_content.append("You left the group.\n");
@@ -230,17 +230,17 @@ public class Multicast extends javax.swing.JFrame {
     }
     
     private void sendSystemMessage(String message) {
-        sendMessage("[System]: " + message);
+        sendMessage(message);
     }
     
     private void handleReceivedMessage(String msg) {
         String[] parts = msg.split(":", 4);
         if (parts.length == 4 && parts[0].equals("private")) {
             if(parts[1].equals(userName) || parts[2].equals(userName)) {
-                txt_content.append("[Private] " + parts[3] + "\n");
+                txt_content.append(parts[3] + "\n");
             }
         }else {
-             txt_content.append(parts[0] + ": " + parts[1] + "\n");
+             txt_content.append(msg + "\n");
         }
     }
     
